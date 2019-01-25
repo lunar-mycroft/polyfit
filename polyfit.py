@@ -2,31 +2,7 @@ from numpy import  matmul, std
 from numpy.linalg import inv as invert
 
 from utility.fileIO import matrixFromDump,CSVLoad
-from utility.reverseEnum import reverseEnumerate
-
-class polynomial:
-    def __init__(self,coeffs):
-        self.A=coeffs
-    def __str__(self):
-        res=""
-        for p, a in reverseEnumerate(self.A):
-            if p==0:
-                res+=str(round(abs(a) if p+1<len(self.A) else a,3))
-            elif p==1:
-                res+=str(round(abs(a) if p+1<len(self.A) else a,3))+'x'
-            else:
-                res+="{}x^{}".format(round(abs(a) if p+1<len(self.A) else a,3),p)
-            
-            if p>0:
-                res+='+' if self.A[p-1]>0 else '-'
-
-        return res
-
-    def __call__(self, x):
-        res=0
-        for p,a in enumerate(self.A):
-            res+=a*(x**p)
-        return res
+from polynomial import Polynomial,coeffToString
 
 def sum2Power(data,power):
     if power==0:
@@ -69,12 +45,8 @@ def polyFit(data,degree):
         return 2, None
     xOnly=list(map(lambda x:x[0],data))
 
-    poly=polynomial(matmul(regressVector(data,degree),invert(regressMatrix(xOnly,degree))))
+    poly=Polynomial(matmul(regressVector(data,degree),invert(regressMatrix(xOnly,degree))))
 
     return None, poly, rSquared(data,poly)
 
-
-fit=polyFit(matrixFromDump(CSVLoad('u6vsLFP.csv'),(1,1),(3,301)),2)
-
-print(fit[1],fit[2])
 
